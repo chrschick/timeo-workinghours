@@ -2,7 +2,7 @@
 
 /* ============ LIGHT THEME VARIABLES ============ */
 .light-theme {
-  --primary: #004d8c;
+  --primary: #7ab7e9;
   --primary-dark: #0f5daa;
   --success: #4caf50;
   --danger: #f44336;
@@ -72,6 +72,11 @@ body {
   line-height: 1.5;
   background: var(--bg-body);
   color: var(--font);
+}
+
+.logo {
+  width: 100%;
+  height: 60px;
 }
 
 /* ============ APP CONTAINER ============ */
@@ -396,9 +401,14 @@ tr.feiertag {
   color: var(--text-feiertag);
 }
 
-tr.feiertag input {
+tr.feiertag input,
+tr.feiertag select {
   color: white;
   background: transparent;
+}
+
+tr.feiertag .diff-neutral {
+  color: white;
 }
 
 /* ============ INPUTS ============ */
@@ -524,7 +534,7 @@ input.comment-input {
 }
 
 .light-theme .year-name {
-  color: var(--primary);
+  color: var(--neutral-text);
 }
 
 .dark-theme .year-name {

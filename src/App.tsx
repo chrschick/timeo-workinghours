@@ -1,9 +1,9 @@
 // TimeCal Main Application
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import CalendarIcon from './assets/calendar.svg'
-import ClockIcon from './assets/clock.svg'
 import DarkmodeIcon from './assets/darkmode.svg'
 import HomeIcon from './assets/home.svg'
+import Logo from './assets/logo.svg'
 import RestoreIcon from './assets/restore.svg'
 import SaveIcon from './assets/save.svg'
 import SunIcon from './assets/sun.svg'
@@ -412,7 +412,14 @@ const YearView: React.FC<YearViewProps> = ({ year, onSelectMonth }) => {
     <div>
       <div className='card'>
         <div className='card-header'>
-          <h2 className='card-title'>📆 Jahr {year.year}</h2>
+          <h2 className='card-title'>
+            <img
+              src={CalendarIcon}
+              alt='Jahresübersicht'
+              className='svg-icon svg-icon-md'
+            />{' '}
+            Jahr {year.year}
+          </h2>
         </div>
         <KPIGrid stats={yearStats} />
       </div>
@@ -892,8 +899,7 @@ const App: React.FC = () => {
     <div className='app'>
       <header className='header'>
         <h1>
-          <img src={ClockIcon} alt='TimeCal' className='svg-icon svg-icon-lg' />
-          Timeo
+          <img src={Logo} alt='TimeCal' className='logo' />
         </h1>
         {renderBreadcrumb()}
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
