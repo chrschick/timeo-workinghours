@@ -1,0 +1,20 @@
+name: Enforce develop as PR source
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [master]
+
+jobs:
+  check_source:
+    runs-on: ubuntu-latest
+    name: Check PR source branch
+    steps:
+      - name: Fail if PR source is not develop
+        run: |
+          echo "PR head branch: '${{ github.head_ref }}'"
+          if [ "${{ github.head_ref }}" != "develop" ]; then
+            echo "Pull requests into 'master' are only allowed from 'develop'."
+            echo "Please open a PR from 'develop' or rebase your changes onto 'develop'."
+            exit 1
+          fi
