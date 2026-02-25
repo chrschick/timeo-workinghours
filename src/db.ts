@@ -130,7 +130,7 @@ const TimeCalDB = {
         bis: '',
         von2: '',
         bis2: '',
-        pause: isWeekend ? '' : '00:30',
+        pause: isWeekend ? '' : '00:45',
         code: '',
         comment: '',
         sollStunden: isWeekend ? 0 : 8,
@@ -246,7 +246,7 @@ const TimeCalDB = {
       bis: '',
       von2: '',
       bis2: '',
-      pause: day.isWeekend ? '' : '00:30',
+      pause: day.isWeekend ? '' : '00:45',
       istStunden: 0,
       sollStunden: day.isWeekend ? 0 : 8,
     })
