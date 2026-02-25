@@ -601,7 +601,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ days, weeklyHours }) => {
                   <td className='report-time'>{day.bis2 || '-'}</td>
                   <td className='report-time'>{day.pause || '-'}</td>
                   <td className='report-gesamt'>
-                    <strong>{formatHours(day.istStunden)}h</strong>
+                    {formatHours(day.istStunden)}h
                   </td>
                   <td className={`report-diff ${getDiffClass(diff)}`}>
                     {diff > 0 ? '+' : ''}
@@ -848,7 +848,9 @@ const MonthView: React.FC<MonthViewProps> = ({ month, year }) => {
                             }
                           />
                         </td>
-                        <td>{formatHours(day.istStunden)}h</td>
+                        <td>
+                          <strong>{formatHours(day.istStunden)}h</strong>
+                        </td>
                         <td className={getDiffClass(diff)}>
                           {diff > 0 ? '+' : ''}
                           {formatHours(diff)}
