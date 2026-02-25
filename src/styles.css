@@ -597,6 +597,58 @@ input.comment-input {
   background: var(--table-hover-bg) !important;
 }
 
+/* ============ YEAR REPORT TABLE ============ */
+.year-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.year-report-table th,
+.year-report-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.year-report-table th {
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  color: var(--font);
+}
+
+.light-theme .year-report-table th {
+  background: #f8f9fa;
+}
+
+.dark-theme .year-report-table th {
+  background: var(--bg-input);
+}
+
+.year-report-table tr:hover {
+  background: var(--table-hover-bg);
+}
+
+.year-report-month {
+  font-weight: 600;
+  min-width: 100px;
+}
+
+.year-report-number {
+  text-align: center;
+  font-weight: 500;
+  min-width: 80px;
+}
+
+.year-report-hours {
+  text-align: right;
+  font-weight: 600;
+  min-width: 90px;
+  font-family: monospace;
+}
+
 /* ============ YEAR LIST ============ */
 .year-list {
   display: grid;

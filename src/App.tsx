@@ -367,10 +367,68 @@ const YearListView: React.FC<YearListViewProps> = ({ onSelectYear }) => {
   )
 }
 
+// ============ YEAR REPORT TABLE ============
+interface YearReportTableProps {
+  months: (Month & { stats: Stats })[]
+}
+
+const YearReportTable: React.FC<YearReportTableProps> = ({ months }) => {
+  return (
+    <div className='table-container'>
+      <table className='year-report-table'>
+        <thead>
+          <tr>
+            <th>Monat</th>
+            <th>Arbeitstage</th>
+            <th>Soll-Stunden</th>
+            <th>Ist-Stunden</th>
+            <th>Krank</th>
+            <th>Kindkrank</th>
+            <th>Urlaub</th>
+            <th>Feiertag</th>
+            <th>Differenz</th>
+            <th>Ø Tag</th>
+          </tr>
+        </thead>
+        <tbody>
+          {months.map((month) => (
+            <tr key={month.id}>
+              <td className='year-report-month'>
+                {MONTH_NAMES[month.month - 1]}
+              </td>
+              <td className='year-report-number'>{month.stats.arbeitstage}</td>
+              <td className='year-report-hours'>
+                {formatHours(month.stats.sollStunden)}h
+              </td>
+              <td className='year-report-hours'>
+                {formatHours(month.stats.istStunden)}h
+              </td>
+              <td className='year-report-number'>{month.stats.krank}</td>
+              <td className='year-report-number'>{month.stats.kindkrank}</td>
+              <td className='year-report-number'>{month.stats.urlaub}</td>
+              <td className='year-report-number'>{month.stats.feiertag}</td>
+              <td
+                className={`year-report-hours ${getDiffClass(month.stats.differenz)}`}
+              >
+                {month.stats.differenz > 0 ? '+' : ''}
+                {formatHours(month.stats.differenz)}h
+              </td>
+              <td className='year-report-hours'>
+                {formatHours(month.stats.durchschnitt)}h
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 // ============ YEAR VIEW (MONTH GRID) ============
 const YearView: React.FC<YearViewProps> = ({ year, onSelectMonth }) => {
   const [months, setMonths] = useState<(Month & { stats: Stats })[]>([])
   const [loading, setLoading] = useState(true)
+  const [showReport, setShowReport] = useState(false)
 
   useEffect(() => {
     loadMonths()
@@ -427,46 +485,56 @@ const YearView: React.FC<YearViewProps> = ({ year, onSelectMonth }) => {
       <div className='card'>
         <div className='card-header'>
           <h2 className='card-title'>Monate</h2>
+          <button
+            className='btn btn-outline btn-sm'
+            onClick={() => setShowReport(!showReport)}
+          >
+            {showReport ? 'Grid' : 'Bericht'}
+          </button>
         </div>
-        <div className='month-grid'>
-          {months.map((month) => (
-            <div
-              key={month.id}
-              className='month-card'
-              onClick={() => onSelectMonth(month)}
-            >
-              <div className='month-card-header'>
-                <span className='month-name'>
-                  {MONTH_NAMES[month.month - 1]}
-                </span>
-              </div>
-              <div className='month-stats'>
-                <div className='month-stat'>
-                  <span>Soll:</span>
-                  <span>{formatHours(month.stats.sollStunden)}h</span>
-                </div>
-                <div className='month-stat'>
-                  <span>Ist:</span>
-                  <span>{formatHours(month.stats.istStunden)}h</span>
-                </div>
-                <div className='month-stat'>
-                  <span>Diff:</span>
-                  <span className={getDiffClass(month.stats.differenz)}>
-                    {month.stats.differenz > 0 ? '+' : ''}
-                    {formatHours(month.stats.differenz)}h
+        {showReport ? (
+          <YearReportTable months={months} />
+        ) : (
+          <div className='month-grid'>
+            {months.map((month) => (
+              <div
+                key={month.id}
+                className='month-card'
+                onClick={() => onSelectMonth(month)}
+              >
+                <div className='month-card-header'>
+                  <span className='month-name'>
+                    {MONTH_NAMES[month.month - 1]}
                   </span>
                 </div>
-                <div className='month-stat'>
-                  <span>K/U/FT:</span>
-                  <span>
-                    {month.stats.krank}/{month.stats.urlaub}/
-                    {month.stats.feiertag}
-                  </span>
+                <div className='month-stats'>
+                  <div className='month-stat'>
+                    <span>Soll:</span>
+                    <span>{formatHours(month.stats.sollStunden)}h</span>
+                  </div>
+                  <div className='month-stat'>
+                    <span>Ist:</span>
+                    <span>{formatHours(month.stats.istStunden)}h</span>
+                  </div>
+                  <div className='month-stat'>
+                    <span>Diff:</span>
+                    <span className={getDiffClass(month.stats.differenz)}>
+                      {month.stats.differenz > 0 ? '+' : ''}
+                      {formatHours(month.stats.differenz)}h
+                    </span>
+                  </div>
+                  <div className='month-stat'>
+                    <span>K/U/FT:</span>
+                    <span>
+                      {month.stats.krank}/{month.stats.urlaub}/
+                      {month.stats.feiertag}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
