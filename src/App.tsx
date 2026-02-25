@@ -848,9 +848,7 @@ const MonthView: React.FC<MonthViewProps> = ({ month, year }) => {
                             }
                           />
                         </td>
-                        <td>
-                          <strong>{formatHours(day.istStunden)}h</strong>
-                        </td>
+                        <td>{formatHours(day.istStunden)}h</td>
                         <td className={getDiffClass(diff)}>
                           {diff > 0 ? '+' : ''}
                           {formatHours(diff)}
