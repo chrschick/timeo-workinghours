@@ -472,12 +472,107 @@ const YearView: React.FC<YearViewProps> = ({ year, onSelectMonth }) => {
   )
 }
 
+// ============ REPORT TABLE (COMPACT VIEW) ============
+interface ReportTableProps {
+  days: Day[]
+  weeklyHours: Record<number, number>
+}
+
+const ReportTable: React.FC<ReportTableProps> = ({ days, weeklyHours }) => {
+  let lastWeek: number | null = null
+
+  return (
+    <div className='table-container'>
+      <table className='report-table'>
+        <thead>
+          <tr>
+            <th>Tag</th>
+            <th>Von</th>
+            <th>Bis</th>
+            <th>Von 2</th>
+            <th>Bis 2</th>
+            <th>Pause</th>
+            <th>Gesamt</th>
+            <th>Diff</th>
+            <th>Code</th>
+            <th>Kommentar</th>
+            <th>KW</th>
+          </tr>
+        </thead>
+        <tbody>
+          {days.map((day) => {
+            const diff = day.istStunden - day.sollStunden
+            const showWeekSummary =
+              lastWeek !== null && lastWeek !== day.isoWeek
+            const weekRow = showWeekSummary ? (
+              <tr key={`week-${lastWeek}`} className='report-week-row'>
+                <td
+                  colSpan={9}
+                  style={{ textAlign: 'right', fontWeight: 'bold' }}
+                >
+                  Woche {lastWeek}:
+                </td>
+                <td colSpan={2} className='week-summary'>
+                  {lastWeek !== null && formatHours(weeklyHours[lastWeek])}h
+                </td>
+              </tr>
+            ) : null
+            lastWeek = day.isoWeek
+
+            return (
+              <React.Fragment key={day.id}>
+                {weekRow}
+                <tr className={`${getRowClass(day)} report-row`}>
+                  <td className='report-day'>
+                    <strong>{DAY_NAMES[day.dayOfWeek]}</strong>{' '}
+                    {String(day.day).padStart(2, '0')}.
+                  </td>
+                  <td className='report-time'>{day.von || '-'}</td>
+                  <td className='report-time'>{day.bis || '-'}</td>
+                  <td className='report-time'>{day.von2 || '-'}</td>
+                  <td className='report-time'>{day.bis2 || '-'}</td>
+                  <td className='report-time'>{day.pause || '-'}</td>
+                  <td className='report-gesamt'>
+                    <strong>{formatHours(day.istStunden)}h</strong>
+                  </td>
+                  <td className={`report-diff ${getDiffClass(diff)}`}>
+                    {diff > 0 ? '+' : ''}
+                    {formatHours(diff)}
+                  </td>
+                  <td className='report-code'>{day.code || '-'}</td>
+                  <td className='report-comment'>{day.comment || '-'}</td>
+                  <td className='report-kw'>{day.isoWeek}</td>
+                </tr>
+              </React.Fragment>
+            )
+          })}
+          {/* Last week summary */}
+          {lastWeek && (
+            <tr className='report-week-row'>
+              <td
+                colSpan={9}
+                style={{ textAlign: 'right', fontWeight: 'bold' }}
+              >
+                Woche {lastWeek}:
+              </td>
+              <td colSpan={2} className='week-summary'>
+                {formatHours(weeklyHours[lastWeek])}h
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 // ============ MONTH VIEW (DAY LIST) ============
 const MonthView: React.FC<MonthViewProps> = ({ month, year }) => {
   const [days, setDays] = useState<Day[]>([])
   const [loading, setLoading] = useState(true)
   const [showSave, setShowSave] = useState(false)
   const [stats, setStats] = useState<Stats | null>(null)
+  const [showReport, setShowReport] = useState(false)
 
   useEffect(() => {
     loadDays()
@@ -584,35 +679,148 @@ const MonthView: React.FC<MonthViewProps> = ({ month, year }) => {
           <h2 className='card-title'>
             📋 {MONTH_NAMES[month.month - 1]} {year.year}
           </h2>
+          <button
+            className='btn btn-outline btn-sm'
+            onClick={() => setShowReport(!showReport)}
+          >
+            {showReport ? 'Bearbeiten' : 'Bericht'}
+          </button>
         </div>
         {stats && <KPIGrid stats={stats} />}
       </div>
 
       <div className='card'>
-        <div className='table-container'>
-          <table>
-            <thead>
-              <tr>
-                <th>Tag</th>
-                <th>Von</th>
-                <th>Bis</th>
-                <th>Von 2</th>
-                <th>Bis 2</th>
-                <th>Pause</th>
-                <th>Gesamt</th>
-                <th>Differenz</th>
-                <th>Code</th>
-                <th>Kommentar</th>
-                <th>KW</th>
-              </tr>
-            </thead>
-            <tbody>
-              {days.map((day) => {
-                const diff = day.istStunden - day.sollStunden
-                const showWeekSummary =
-                  lastWeek !== null && lastWeek !== day.isoWeek
-                const weekRow = showWeekSummary ? (
-                  <tr key={`week-${lastWeek}`}>
+        {showReport ? (
+          <ReportTable days={days} weeklyHours={weeklyHours} />
+        ) : (
+          <div className='table-container'>
+            <table>
+              <thead>
+                <tr>
+                  <th>Tag</th>
+                  <th>Von</th>
+                  <th>Bis</th>
+                  <th>Von 2</th>
+                  <th>Bis 2</th>
+                  <th>Pause</th>
+                  <th>Gesamt</th>
+                  <th>Differenz</th>
+                  <th>Code</th>
+                  <th>Kommentar</th>
+                  <th>KW</th>
+                </tr>
+              </thead>
+              <tbody>
+                {days.map((day) => {
+                  const diff = day.istStunden - day.sollStunden
+                  const showWeekSummary =
+                    lastWeek !== null && lastWeek !== day.isoWeek
+                  const weekRow = showWeekSummary ? (
+                    <tr key={`week-${lastWeek}`}>
+                      <td
+                        colSpan={10}
+                        style={{ textAlign: 'right', fontWeight: 'bold' }}
+                      >
+                        Woche {lastWeek}:
+                      </td>
+                      <td className='week-summary'>
+                        {lastWeek !== null &&
+                          formatHours(weeklyHours[lastWeek])}
+                        h
+                      </td>
+                    </tr>
+                  ) : null
+                  lastWeek = day.isoWeek
+
+                  return (
+                    <React.Fragment key={day.id}>
+                      {weekRow}
+                      <tr className={getRowClass(day)}>
+                        <td>
+                          <strong>{DAY_NAMES[day.dayOfWeek]}</strong>{' '}
+                          {String(day.day).padStart(2, '0')}.
+                        </td>
+                        <td>
+                          <TimeInputField
+                            value={day.von || ''}
+                            onChange={(val) =>
+                              handleInputChange(day.id || 0, 'von', val)
+                            }
+                          />
+                        </td>
+                        <td>
+                          <TimeInputField
+                            value={day.bis || ''}
+                            onChange={(val) =>
+                              handleInputChange(day.id || 0, 'bis', val)
+                            }
+                          />
+                        </td>
+                        <td>
+                          <TimeInputField
+                            value={day.von2 || ''}
+                            onChange={(val) =>
+                              handleInputChange(day.id || 0, 'von2', val)
+                            }
+                          />
+                        </td>
+                        <td>
+                          <TimeInputField
+                            value={day.bis2 || ''}
+                            onChange={(val) =>
+                              handleInputChange(day.id || 0, 'bis2', val)
+                            }
+                          />
+                        </td>
+                        <td>
+                          <TimeInputField
+                            value={day.pause || ''}
+                            onChange={(val) =>
+                              handleInputChange(day.id || 0, 'pause', val)
+                            }
+                          />
+                        </td>
+                        <td>
+                          <strong>{formatHours(day.istStunden)}h</strong>
+                        </td>
+                        <td className={getDiffClass(diff)}>
+                          {diff > 0 ? '+' : ''}
+                          {formatHours(diff)}
+                        </td>
+                        <td>
+                          <CodeSelector
+                            day={day}
+                            onApply={(code: Day['code']) =>
+                              handleCodeApply(day.id || 0, code)
+                            }
+                            onClear={() => handleCodeClear(day.id || 0)}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type='text'
+                            className='comment-input'
+                            value={day.comment || ''}
+                            onChange={(e) =>
+                              handleInputChange(
+                                day.id || 0,
+                                'comment',
+                                e.target.value,
+                              )
+                            }
+                            placeholder='Kommentar...'
+                          />
+                        </td>
+                        <td style={{ textAlign: 'center', color: '#666' }}>
+                          {day.isoWeek}
+                        </td>
+                      </tr>
+                    </React.Fragment>
+                  )
+                })}
+                {/* Last week summary */}
+                {lastWeek && (
+                  <tr>
                     <td
                       colSpan={10}
                       style={{ textAlign: 'right', fontWeight: 'bold' }}
@@ -620,115 +828,14 @@ const MonthView: React.FC<MonthViewProps> = ({ month, year }) => {
                       Woche {lastWeek}:
                     </td>
                     <td className='week-summary'>
-                      {lastWeek !== null && formatHours(weeklyHours[lastWeek])}h
+                      {formatHours(weeklyHours[lastWeek])}h
                     </td>
                   </tr>
-                ) : null
-                lastWeek = day.isoWeek
-
-                return (
-                  <React.Fragment key={day.id}>
-                    {weekRow}
-                    <tr className={getRowClass(day)}>
-                      <td>
-                        <strong>{DAY_NAMES[day.dayOfWeek]}</strong>{' '}
-                        {String(day.day).padStart(2, '0')}.
-                      </td>
-                      <td>
-                        <TimeInputField
-                          value={day.von || ''}
-                          onChange={(val) =>
-                            handleInputChange(day.id || 0, 'von', val)
-                          }
-                        />
-                      </td>
-                      <td>
-                        <TimeInputField
-                          value={day.bis || ''}
-                          onChange={(val) =>
-                            handleInputChange(day.id || 0, 'bis', val)
-                          }
-                        />
-                      </td>
-                      <td>
-                        <TimeInputField
-                          value={day.von2 || ''}
-                          onChange={(val) =>
-                            handleInputChange(day.id || 0, 'von2', val)
-                          }
-                        />
-                      </td>
-                      <td>
-                        <TimeInputField
-                          value={day.bis2 || ''}
-                          onChange={(val) =>
-                            handleInputChange(day.id || 0, 'bis2', val)
-                          }
-                        />
-                      </td>
-                      <td>
-                        <TimeInputField
-                          value={day.pause || ''}
-                          onChange={(val) =>
-                            handleInputChange(day.id || 0, 'pause', val)
-                          }
-                        />
-                      </td>
-                      <td>
-                        <strong>{formatHours(day.istStunden)}h</strong>
-                      </td>
-                      <td className={getDiffClass(diff)}>
-                        {diff > 0 ? '+' : ''}
-                        {formatHours(diff)}
-                      </td>
-                      <td>
-                        <CodeSelector
-                          day={day}
-                          onApply={(code: Day['code']) =>
-                            handleCodeApply(day.id || 0, code)
-                          }
-                          onClear={() => handleCodeClear(day.id || 0)}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type='text'
-                          className='comment-input'
-                          value={day.comment || ''}
-                          onChange={(e) =>
-                            handleInputChange(
-                              day.id || 0,
-                              'comment',
-                              e.target.value,
-                            )
-                          }
-                          placeholder='Kommentar...'
-                        />
-                      </td>
-                      <td style={{ textAlign: 'center', color: '#666' }}>
-                        {day.isoWeek}
-                      </td>
-                    </tr>
-                  </React.Fragment>
-                )
-              })}
-              {/* Last week summary */}
-              {lastWeek && (
-                <tr>
-                  <td
-                    colSpan={10}
-                    style={{ textAlign: 'right', fontWeight: 'bold' }}
-                  >
-                    Woche {lastWeek}:
-                  </td>
-                  <td className='week-summary'>
-                    {formatHours(weeklyHours[lastWeek])}h
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       <SaveIndicator show={showSave} />

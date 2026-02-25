@@ -505,6 +505,98 @@ input.comment-input {
   border-color: var(--primary);
 }
 
+/* ============ REPORT TABLE (COMPACT VIEW) ============ */
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.report-table th,
+.report-table td {
+  padding: 4px 6px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.report-table th {
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  color: var(--font);
+}
+
+.light-theme .report-table th {
+  background: #f8f9fa;
+}
+
+.dark-theme .report-table th {
+  background: var(--bg-input);
+}
+
+/* Report row cells - more compact */
+.report-row td {
+  padding: 3px 4px;
+  vertical-align: middle;
+}
+
+.report-day {
+  font-weight: 500;
+  min-width: 70px;
+}
+
+.report-time {
+  text-align: center;
+  font-family: monospace;
+  font-size: 0.8rem;
+  min-width: 45px;
+}
+
+.report-gesamt {
+  text-align: right;
+  font-weight: 600;
+  min-width: 50px;
+}
+
+.report-diff {
+  text-align: right;
+  font-weight: 600;
+  min-width: 45px;
+}
+
+.report-code {
+  text-align: center;
+  font-weight: 600;
+  min-width: 35px;
+}
+
+.report-comment {
+  font-size: 0.8rem;
+  min-width: 100px;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.report-kw {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--neutral-text);
+  min-width: 30px;
+}
+
+/* Week summary row in report */
+.report-week-row {
+  background: var(--table-hover-bg) !important;
+  font-weight: 600;
+}
+
+.report-week-row:hover {
+  background: var(--table-hover-bg) !important;
+}
+
 /* ============ YEAR LIST ============ */
 .year-list {
   display: grid;
